@@ -112,6 +112,7 @@ configDerived = [
         'initramfs',  # boolean: should we use an initramfs with this config?
         'jobs',  # After parsing, jobs is a collections.OrderedDict containing 'Config' objects for each job.
         'base-deps',  # A list of tasks that this workload needs from its base (a potentially empty list)
+        'base-file-deps',  # Base outputs that must also be tracked as files
         'firmware-src',  # A convenience field that points to whatever firmware is configured
         'use-parent-bin',  # Child would build the exact same binary as the parent, just copy it instead of rebuilding.
         'img-hardcoded',  # The workload hard-coded an image, we will blindly use it.
@@ -238,7 +239,7 @@ class RunSpec():
         if self.command is not None:
             return self.command
         elif self.path is not None:
-            return str(self.path) + " " + ' '.join(self.args)
+            return str(self.path) + ((" " + ' '.join(self.args)) if self.args else "")
         else:
             return "uninitialized"
 
@@ -432,6 +433,7 @@ class Config(collections.abc.MutableMapping):
 
         # Some default values
         self.cfg['base-deps'] = []
+        self.cfg['base-file-deps'] = []
         self.cfg['use-parent-bin'] = False
 
         if 'isDistro' not in self.cfg:
@@ -539,6 +541,7 @@ class Config(collections.abc.MutableMapping):
         if 'img' in baseCfg:
             self.cfg['base-img'] = baseCfg['img']
             self.cfg['base-deps'].append(str(self.cfg['base-img']))
+            self.cfg['base-file-deps'].append(str(self.cfg['base-img']))
             self.cfg['img'] = self.cfg['out-dir'] / (self.cfg['name'] + ".img")
 
         if 'bin' in baseCfg:

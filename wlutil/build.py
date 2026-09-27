@@ -231,7 +231,7 @@ def addDep(loader, config):
     # The bootbinary's initramfs and kernel build depend on the base image
     # inputs. Keep those as file dependencies as well as task dependencies;
     # otherwise a rebuilt Buildroot image can leave a stale disk bootbinary.
-    bin_file_deps = [] + config['base-deps']
+    bin_file_deps = [] + config['base-file-deps']
     bin_task_deps = [] + hostInit + config['base-deps']
     bin_targets = []
     if 'linux' in config:
